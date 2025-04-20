@@ -52,9 +52,16 @@ export async function check(
 				: `Found ${matchedGuilds.length} guilds`;
 
 		response = `${guildsText} for <@${option.value}> (\`${option.value}\`):\n${matchedGuilds
-			.map(
-				(matchedGuild) => `- ${matchedGuild.name} <@${matchedGuild.ownerId}>`,
-			)
+			.map((matchedGuild) => {
+				let string = "- ";
+
+				if (matchedGuild.profile?.tag) {
+					string += `\`[${matchedGuild.profile.tag}]\` `;
+				}
+
+				string += `${matchedGuild.name} <@${matchedGuild.ownerId}>`;
+				return string;
+			})
 			.join("\n")}`;
 	}
 
