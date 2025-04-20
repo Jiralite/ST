@@ -8,7 +8,8 @@ if (
 		process.env.ILLUMINATI_GUILD_ID &&
 		process.env.GUILD_1 &&
 		process.env.GUILD_2 &&
-		process.env.GUILD_3
+		process.env.GUILD_3 &&
+		process.env.GUILD_4
 	)
 ) {
 	throw new Error("Missing environment variables.");
@@ -22,4 +23,5 @@ export const GUILDS_CHECKING = [
 	process.env.GUILD_1,
 	process.env.GUILD_2,
 	process.env.GUILD_3,
+	process.env.GUILD_4,
 ] as const satisfies Readonly<Snowflake[]>;
