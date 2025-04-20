@@ -32,6 +32,9 @@ export default {
 				await client.api.users.leaveGuild(data.id);
 			}
 
+			const guild = new Guild(data);
+			GUILD_CACHE.set(guild.id, guild);
+
 			if (GUILD_IDS_FROM_READY.size === 0) {
 				// All guilds are cached. Perform our startup checks that need to occur.
 				await startup();
