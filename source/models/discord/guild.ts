@@ -3,6 +3,7 @@ import type {
 	GatewayGuildCreateDispatchData,
 	Snowflake,
 } from "@discordjs/core";
+import { client } from "../../discord.js";
 import { GuildMember } from "./guild-member.js";
 
 export class Guild {
@@ -26,5 +27,19 @@ export class Guild {
 
 	public patch(data: APIGuild) {
 		this.name = data.name;
+	}
+
+	public async cacheAllMembers() {
+		const requestGuildMembersResponse = await client.requestGuildMembers({
+			guild_id: this.id,
+			limit: 0,
+			query: "",
+		});
+
+		this.members.clear();
+
+		for (const member of requestGuildMembersResponse.members) {
+			this.members.set(member.user.id, member);
+		}
 	}
 }

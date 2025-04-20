@@ -9,14 +9,6 @@ export async function startup() {
 			await client.api.users.leaveGuild(guild.id);
 		}
 
-		const requestGuildMembersResponse = await client.requestGuildMembers({
-			guild_id: guild.id,
-			limit: 0,
-			query: "",
-		});
-
-		for (const member of requestGuildMembersResponse.members) {
-			guild.members.set(member.user.id, member);
-		}
+		await guild.cacheAllMembers();
 	}
 }

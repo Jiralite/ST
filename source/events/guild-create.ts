@@ -23,24 +23,31 @@ export default {
 			return;
 		}
 
-		if (GUILDS_CHECKING.includes(data.id)) {
-			const guild = new Guild(data);
-			GUILD_CACHE.set(guild.id, guild);
-		} else {
-			// We should not be in this guild.
-			await client.api.users.leaveGuild(data.id);
-		}
-
 		if (GUILD_IDS_FROM_READY.has(data.id)) {
 			// This is from the ready event where packets are sent for us to cache. Not new joins.
 			GUILD_IDS_FROM_READY.delete(data.id);
 
+			if (!GUILDS_CHECKING.includes(data.id)) {
+				// We should not be in this guild.
+				await client.api.users.leaveGuild(data.id);
+			}
+
 			if (GUILD_IDS_FROM_READY.size === 0) {
-				// All guilds are cached. Perform our startup checks that need to occur when all guilds are cached.
+				// All guilds are cached. Perform our startup checks that need to occur.
 				await startup();
 			}
 
 			return;
 		}
+
+		if (!GUILDS_CHECKING.includes(data.id)) {
+			// We should not be in this guild.
+			await client.api.users.leaveGuild(data.id);
+			return;
+		}
+
+		const guild = new Guild(data);
+		GUILD_CACHE.set(guild.id, guild);
+		await guild.cacheAllMembers();
 	},
 } satisfies Event<typeof name>;
