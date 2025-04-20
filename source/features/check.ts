@@ -41,11 +41,25 @@ export async function check(
 		}
 	}
 
+	let response: string;
+
+	if (matchedGuilds.length === 0) {
+		response = `<@${option.value}> not found.`;
+	} else {
+		const guildsText =
+			matchedGuilds.length === 1
+				? "Found 1 guild"
+				: `Found ${matchedGuilds.length} guilds`;
+
+		response = `${guildsText} for <@${option.value}> (\`${option.value}\`):\n${matchedGuilds
+			.map(
+				(matchedGuild) => `- ${matchedGuild.name} <@${matchedGuild.ownerId}>`,
+			)
+			.join("\n")}`;
+	}
+
 	await client.api.interactions.editReply(APPLICATION_ID, interaction.token, {
 		allowed_mentions: { parse: [] },
-		content:
-			matchedGuilds.length === 0
-				? `<@${option.value}> not found.`
-				: `Found ${matchedGuilds.length} guilds for <@${option.value}>:\n${matchedGuilds.map((matchedGuild) => `- ${matchedGuild.name}`).join("\n")}`,
+		content: response,
 	});
 }
