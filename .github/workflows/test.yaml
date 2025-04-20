@@ -1,0 +1,44 @@
+name: Test
+on: push
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.7.1
+          run_install: |
+            - args: [--frozen-lockfile]
+
+      - name: Build dependencies
+        run: pnpm run build
+
+      - name: Validate TypeScript
+        run: pnpm run test
+  style:
+    name: Styling
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: biomejs/setup-biome@v2
+
+      - name: Run Biome
+        run: biome ci --reporter=github
+  typographical-errors:
+    name: Typographical errors
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for typographical errors
+        uses: crate-ci/typos@master

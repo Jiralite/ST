@@ -1,0 +1,26 @@
+{
+	"name": "@jiralite/st",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"test": "tsc --noEmit",
+		"format": "biome check --write",
+		"lint": "biome check",
+		"dev": "tsx --env-file=.env source/index.ts",
+		"start": "node distribution/index.js",
+		"deploy-commands": "NODE_ENV=production tsx --env-file=.env source/utility/deploy-commands.ts",
+		"knip": "knip"
+	},
+	"dependencies": {
+		"@discordjs/core": "^2.0.1",
+		"@discordjs/rest": "^2.4.3",
+		"@discordjs/ws": "^2.0.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"knip": "^5.46.4",
+		"tsx": "^4.19.3",
+		"typescript": "5.8.2"
+	}
+}

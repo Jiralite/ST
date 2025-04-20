@@ -1,0 +1,21 @@
+import process from "node:process";
+import type { Snowflake } from "@discordjs/core";
+
+if (
+	!(
+		process.env.APPLICATION_ID &&
+		process.env.DISCORD_TOKEN &&
+		process.env.ILLUMINATI_GUILD_ID &&
+		process.env.GUILD_1
+	)
+) {
+	throw new Error("Missing environment variables.");
+}
+
+export const APPLICATION_ID = process.env.APPLICATION_ID;
+export const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
+export const ILLUMINATI_GUILD_ID = process.env.ILLUMINATI_GUILD_ID;
+
+export const GUILDS_CHECKING = [
+	process.env.GUILD_1,
+] as const satisfies Readonly<Snowflake[]>;

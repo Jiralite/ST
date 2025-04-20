@@ -1,0 +1,18 @@
+---
+  name: Deploy ST codebase
+  on:
+    push:
+      branches: main
+    workflow_dispatch:
+  jobs:
+    deploy:
+      name: Deploy ST
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+  
+        - uses: superfly/flyctl-actions/setup-flyctl@master
+  
+        - run: flyctl deploy --remote-only --access-token $FLY_DEPLOY_TOKEN
+          env:
+            FLY_DEPLOY_TOKEN: ${{ secrets.FLY_DEPLOY_TOKEN }}
