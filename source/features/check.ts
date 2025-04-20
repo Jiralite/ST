@@ -4,6 +4,7 @@ import {
 } from "@discordjs/core";
 import { GUILD_CACHE } from "../caches/guilds.js";
 import { client } from "../discord.js";
+import { ILLUMINATI_GUILD_ID } from "../utility/configuration.js";
 
 export async function check(
 	interaction: APIChatInputApplicationCommandInteraction,
@@ -22,6 +23,10 @@ export async function check(
 	const matchedGuilds = [];
 
 	for (const guild of GUILD_CACHE.values()) {
+		if (guild.id === ILLUMINATI_GUILD_ID) {
+			continue;
+		}
+
 		if (guild.members.has(option.value)) {
 			matchedGuilds.push(guild);
 		}
