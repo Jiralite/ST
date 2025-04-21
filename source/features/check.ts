@@ -6,6 +6,8 @@ import { GUILD_CACHE } from "../caches/guilds.js";
 import { client } from "../discord.js";
 import {
 	APPLICATION_ID,
+	GUILD_7,
+	GUILD_7_CONTACT_ID,
 	ILLUMINATI_GUILD_ID,
 } from "../utility/configuration.js";
 
@@ -59,7 +61,14 @@ export async function check(
 					string += `\`[${matchedGuild.profile.tag}]\` `;
 				}
 
-				string += `${matchedGuild.name} <@${matchedGuild.ownerId}>`;
+				string += `${matchedGuild.name} `;
+
+				if (matchedGuild.id === GUILD_7) {
+					string += `<@${GUILD_7_CONTACT_ID}>`;
+				} else {
+					string += `<@${matchedGuild.ownerId}>`;
+				}
+
 				return string;
 			})
 			.join("\n")}`;

@@ -13,6 +13,7 @@ if (
 		process.env.GUILD_5 &&
 		process.env.GUILD_6 &&
 		process.env.GUILD_7 &&
+		process.env.GUILD_7_CONTACT_ID &&
 		process.env.GUILD_8 &&
 		process.env.GUILD_9 &&
 		process.env.GUILD_10 &&
@@ -40,3 +41,6 @@ export const GUILDS_CHECKING = [
 	process.env.GUILD_10,
 	process.env.GUILD_11,
 ] as const satisfies Readonly<Snowflake[]>;
+
+export const GUILD_7 = process.env.GUILD_7;
+export const GUILD_7_CONTACT_ID = process.env.GUILD_7_CONTACT_ID;
