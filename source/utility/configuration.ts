@@ -14,7 +14,8 @@ if (
 		process.env.GUILD_6 &&
 		process.env.GUILD_7 &&
 		process.env.GUILD_8 &&
-		process.env.GUILD_9
+		process.env.GUILD_9 &&
+		process.env.GUILD_10
 	)
 ) {
 	throw new Error("Missing environment variables.");
@@ -35,4 +36,5 @@ export const GUILDS_CHECKING = [
 	process.env.GUILD_7,
 	process.env.GUILD_8,
 	process.env.GUILD_9,
+	process.env.GUILD_10,
 ] as const satisfies Readonly<Snowflake[]>;
