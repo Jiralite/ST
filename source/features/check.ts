@@ -27,9 +27,15 @@ export async function check(
 	}
 
 	const matchedGuilds = [];
+	const unavailableGuilds = [];
 
 	for (const guild of GUILD_CACHE.values()) {
 		if (guild.id === ILLUMINATI_GUILD_ID) {
+			continue;
+		}
+
+		if (guild.unavailable) {
+			unavailableGuilds.push(guild);
 			continue;
 		}
 
@@ -43,10 +49,14 @@ export async function check(
 		}
 	}
 
-	let response: string;
+	let response = "";
+
+	if (unavailableGuilds.length > 0) {
+		response += `The following guilds are unavailable: \n${unavailableGuilds.map((guild) => `- ${guild.name} (\`${guild.id}\`)`).join("\n")}\n\n`;
+	}
 
 	if (matchedGuilds.length === 0) {
-		response = `<@${option.value}> not found.`;
+		response += `<@${option.value}> not found.`;
 	} else {
 		matchedGuilds.sort((a, b) => {
 			if (a.profile === null) {
@@ -65,7 +75,7 @@ export async function check(
 				? "Found 1 guild"
 				: `Found ${matchedGuilds.length} guilds`;
 
-		response = `${guildsText} for <@${option.value}> (\`${option.value}\`):\n${matchedGuilds
+		response += `${guildsText} for <@${option.value}> (\`${option.value}\`):\n${matchedGuilds
 			.map((matchedGuild) => {
 				let string = "- ";
 
