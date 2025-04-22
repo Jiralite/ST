@@ -48,6 +48,18 @@ export async function check(
 	if (matchedGuilds.length === 0) {
 		response = `<@${option.value}> not found.`;
 	} else {
+		matchedGuilds.sort((a, b) => {
+			if (a.profile === null) {
+				return 1;
+			}
+
+			if (b.profile === null) {
+				return -1;
+			}
+
+			return a.profile.tag.localeCompare(b.profile.tag);
+		});
+
 		const guildsText =
 			matchedGuilds.length === 1
 				? "Found 1 guild"
