@@ -1,31 +1,13 @@
-import {
-	type APIChatInputApplicationCommandInteraction,
-	ApplicationCommandOptionType,
-} from "@discordjs/core";
+import type { Snowflake } from "@discordjs/core";
 import { GUILD_CACHE } from "../caches/guilds.js";
 import { client } from "../discord.js";
 import {
-	APPLICATION_ID,
 	GUILD_7,
 	GUILD_7_CONTACT_ID,
 	ILLUMINATI_GUILD_ID,
 } from "../utility/configuration.js";
 
-export async function check(
-	interaction: APIChatInputApplicationCommandInteraction,
-) {
-	await client.api.interactions.defer(interaction.id, interaction.token);
-	const option = interaction.data.options?.[0];
-
-	if (
-		!(
-			option?.name === "user" &&
-			option.type === ApplicationCommandOptionType.User
-		)
-	) {
-		return;
-	}
-
+export async function check(userId: Snowflake) {
 	const matchedGuilds = [];
 	const unavailableGuilds = [];
 
@@ -41,7 +23,7 @@ export async function check(
 
 		const requestGuildMembersResult = await client.requestGuildMembers({
 			guild_id: guild.id,
-			user_ids: [option.value],
+			user_ids: [userId],
 		});
 
 		if (requestGuildMembersResult.members[0]) {
@@ -56,7 +38,7 @@ export async function check(
 	}
 
 	if (matchedGuilds.length === 0) {
-		response += `<@${option.value}> not found.`;
+		response += `<@${userId}> not found.`;
 	} else {
 		matchedGuilds.sort((a, b) => {
 			if (a.profile === null) {
@@ -75,7 +57,7 @@ export async function check(
 				? "Found 1 guild"
 				: `Found ${matchedGuilds.length} guilds`;
 
-		response += `${guildsText} for <@${option.value}> (\`${option.value}\`):\n${matchedGuilds
+		response += `${guildsText} for <@${userId}> (\`${userId}\`):\n${matchedGuilds
 			.map((matchedGuild) => {
 				let string = "- ";
 
@@ -96,8 +78,5 @@ export async function check(
 			.join("\n")}`;
 	}
 
-	await client.api.interactions.editReply(APPLICATION_ID, interaction.token, {
-		allowed_mentions: { parse: [] },
-		content: response,
-	});
+	return response;
 }
