@@ -5,6 +5,8 @@ node_modules/
 distribution/
 test.ts
 .env
+.env.production
+.env.development
 
 # Miscellaneous
 .DS_Store

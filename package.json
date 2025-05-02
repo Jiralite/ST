@@ -7,9 +7,9 @@
 		"test": "tsc --noEmit",
 		"format": "biome check --write",
 		"lint": "biome check",
-		"dev": "tsx --env-file=.env source/index.ts",
+		"dev": "tsx --env-file=.env.development source/index.ts",
 		"start": "node distribution/index.js",
-		"deploy-commands": "NODE_ENV=production tsx --env-file=.env source/utility/deploy-commands.ts",
+		"deploy-commands": "tsx --env-file=.env.production source/utility/deploy-commands.ts",
 		"knip": "knip"
 	},
 	"dependencies": {
