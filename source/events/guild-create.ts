@@ -1,8 +1,6 @@
 import { GatewayDispatchEvents } from "@discordjs/core";
 import { GUILD_CACHE, GUILD_IDS_FROM_READY } from "../caches/guilds.js";
-import { client } from "../discord.js";
 import { Guild } from "../models/discord/guild.js";
-import { GUILDS_CHECKING } from "../utility/configuration.js";
 import type { Event } from "./index.js";
 
 const name = GatewayDispatchEvents.GuildCreate;
@@ -25,21 +23,6 @@ export default {
 		if (GUILD_IDS_FROM_READY.has(data.id)) {
 			// This is from the ready event where packets are sent for us to cache. Not new joins.
 			GUILD_IDS_FROM_READY.delete(data.id);
-
-			if (!GUILDS_CHECKING.includes(data.id)) {
-				// We should not be in this guild.
-				await client.api.users.leaveGuild(data.id);
-			}
-
-			const guild = new Guild(data);
-			GUILD_CACHE.set(guild.id, guild);
-			return;
-		}
-
-		if (!GUILDS_CHECKING.includes(data.id)) {
-			// We should not be in this guild.
-			await client.api.users.leaveGuild(data.id);
-			return;
 		}
 
 		const guild = new Guild(data);

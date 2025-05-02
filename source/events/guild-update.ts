@@ -14,6 +14,7 @@ export default {
 				{ data },
 				`Received a ${name} packet for an uncached guild.`,
 			);
+
 			return;
 		}
 

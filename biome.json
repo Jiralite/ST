@@ -3,6 +3,7 @@
 	"linter": {
 		"rules": {
 			"style": {
+				"noNonNullAssertion": "off",
 				"useDefaultSwitchClause": "off"
 			},
 			"suspicious": {

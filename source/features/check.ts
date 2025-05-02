@@ -1,15 +1,13 @@
 import type { Snowflake } from "@discordjs/core";
 import { GUILD_CACHE } from "../caches/guilds.js";
 import { client } from "../discord.js";
-import {
-	GUILD_7,
-	GUILD_7_CONTACT_ID,
-	ILLUMINATI_GUILD_ID,
-} from "../utility/configuration.js";
+import pg, { Table } from "../pg.js";
+import { ILLUMINATI_GUILD_ID } from "../utility/configuration.js";
+import type { GuildsPacket } from "./guilds.js";
 
 export async function check(userId: Snowflake) {
-	const matchedGuilds = [];
-	const unavailableGuilds = [];
+	const promises = [];
+	const errorGuilds = [];
 
 	for (const guild of GUILD_CACHE.values()) {
 		if (guild.id === ILLUMINATI_GUILD_ID) {
@@ -17,65 +15,74 @@ export async function check(userId: Snowflake) {
 		}
 
 		if (guild.unavailable) {
-			unavailableGuilds.push(guild);
+			errorGuilds.push(guild);
 			continue;
 		}
 
-		const requestGuildMembersResult = await client.requestGuildMembers({
-			guild_id: guild.id,
-			user_ids: [userId],
-		});
+		promises.push(
+			client
+				.requestGuildMembers({
+					guild_id: guild.id,
+					user_ids: [userId],
+				})
+				.then((requestedGuildMembers) => ({
+					guild,
+					response: requestedGuildMembers,
+				})),
+		);
+	}
 
-		if (requestGuildMembersResult.members[0]) {
-			matchedGuilds.push(guild);
+	const settled = await Promise.allSettled(promises);
+	const matchedGuilds = [];
+
+	for (let index = 0; index < settled.length; index++) {
+		const result = settled[index]!;
+
+		if (result.status === "fulfilled") {
+			if (result.value.response.members.length > 0) {
+				matchedGuilds.push(result.value);
+			}
+		} else {
+			errorGuilds.push(GUILD_CACHE.at(index));
 		}
 	}
 
-	let response = "";
-
-	if (unavailableGuilds.length > 0) {
-		response += `The following guilds are unavailable: \n${unavailableGuilds.map((guild) => `- ${guild.name} (\`${guild.id}\`)`).join("\n")}\n\n`;
+	if (errorGuilds.length > 0) {
+		console.log({ errorGuilds }, "Error while checking guilds.");
 	}
 
+	let response: string;
+
 	if (matchedGuilds.length === 0) {
-		response += `<@${userId}> not found.`;
+		response = `<@${userId}> not found.`;
 	} else {
-		matchedGuilds.sort((a, b) => {
-			if (a.profile === null) {
-				return 1;
-			}
-
-			if (b.profile === null) {
-				return -1;
-			}
-
-			return a.profile.tag.localeCompare(b.profile.tag);
-		});
+		matchedGuilds.sort(({ guild: guildA }, { guild: guildB }) =>
+			guildA.profile === null
+				? 1
+				: guildB.profile === null
+					? -1
+					: guildA.profile.tag.localeCompare(guildB.profile.tag),
+		);
 
 		const guildsText =
 			matchedGuilds.length === 1
 				? "Found 1 guild"
 				: `Found ${matchedGuilds.length} guilds`;
 
-		response += `${guildsText} for <@${userId}> (\`${userId}\`):\n${matchedGuilds
-			.map((matchedGuild) => {
-				let string = "- ";
+		response = `${guildsText} for <@${userId}>:\n${(
+			await Promise.all(
+				matchedGuilds.map(async ({ guild }, index) => {
+					let string = `${index + 1}. `;
 
-				if (matchedGuild.profile?.tag) {
-					string += `\`[${matchedGuild.profile.tag}]\` `;
-				}
+					if (guild.profile?.tag) {
+						string += `\`[${guild.profile.tag}]\` `;
+					}
 
-				string += `${matchedGuild.name} `;
-
-				if (matchedGuild.id === GUILD_7) {
-					string += `<@${GUILD_7_CONTACT_ID}>`;
-				} else {
-					string += `<@${matchedGuild.ownerId}>`;
-				}
-
-				return string;
-			})
-			.join("\n")}`;
+					string += `${guild.name} <@${(await pg<GuildsPacket>(Table.Guilds).select("contact_id").where({ guild_id: guild.id }).first())?.contact_id ?? guild.ownerId}>`;
+					return string;
+				}),
+			)
+		).join("\n")}`;
 	}
 
 	return response;
