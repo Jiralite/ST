@@ -57,9 +57,9 @@ export async function check(userId: Snowflake) {
 		response = `<@${userId}> not found.`;
 	} else {
 		matchedGuilds.sort(({ guild: guildA }, { guild: guildB }) =>
-			guildA.profile === null
+			guildA.profile === null || guildA.profile.tag === null
 				? 1
-				: guildB.profile === null
+				: guildB.profile === null || guildB.profile.tag === null
 					? -1
 					: guildA.profile.tag.localeCompare(guildB.profile.tag),
 		);

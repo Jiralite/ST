@@ -5,7 +5,7 @@ import type {
 } from "@discordjs/core";
 
 interface GuildProfile {
-	tag: string;
+	tag: string | null;
 	badge: string;
 }
 
